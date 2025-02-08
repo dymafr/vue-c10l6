@@ -4,8 +4,8 @@ import type {
   ProductInterface,
   FilterUpdate,
 } from '../../interfaces';
-import ShopProductList from './ShopProductList.vue';
-import ShopFilters from './ShopFilters.vue';
+import AppShopProductList from './AppShopProductList.vue';
+import AppShopFilters from './AppShopFilters.vue';
 
 defineProps<{
   products: ProductInterface[];
@@ -20,13 +20,13 @@ const emit = defineEmits<{
 
 <template>
   <div class="d-flex flex-row">
-    <ShopFilters
+    <AppShopFilters
       :filters="filters"
       :nbr-of-products="products.length"
       @update-filter="emit('updateFilter', $event)"
       class="shop-filter"
     />
-    <ShopProductList
+    <AppShopProductList
       class="flex-fill"
       @add-product-to-cart="emit('addProductToCart', $event)"
       :products="products"

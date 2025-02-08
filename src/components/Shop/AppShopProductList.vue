@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { ProductInterface } from '@/interfaces';
-import ShopProduct from './ShopProduct.vue';
+import type { ProductInterface } from "@/interfaces";
+import AppShopProduct from "./AppShopProduct.vue";
 
 defineProps<{
   products: ProductInterface[];
 }>();
 
 const emit = defineEmits<{
-  (e: 'addProductToCart', productId: number): void;
+  (e: "addProductToCart", productId: number): void;
 }>();
 </script>
 
 <template>
   <div class="grid p-20">
-    <ShopProduct
+    <AppShopProduct
       @add-product-to-cart="emit('addProductToCart', $event)"
       v-for="product of products"
       :product="product"

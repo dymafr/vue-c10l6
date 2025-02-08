@@ -1,84 +1,72 @@
 <script setup lang="ts">
-import TheHeader from './components/Header.vue';
-import TheFooter from './components/Footer.vue';
-import Shop from './components/Shop/Shop.vue';
-import Cart from './components/Cart/Cart.vue';
-import data from './data/product';
-import { computed, reactive } from 'vue';
+import AppHeader from './components/AppHeader.vue'
+import AppFooter from './components/AppFooter.vue'
+import AppShop from './components/Shop/AppShop.vue'
+import AppCart from './components/Cart/AppCart.vue'
+import data from './data/product'
+import { computed, ref } from 'vue'
 import type {
   FiltersInterface,
   ProductCartInterface,
   ProductInterface,
   FilterUpdate,
-} from './interfaces';
-import { DEFAULT_FILTERS } from './data/filters';
+} from './interfaces'
+import { DEFAULT_FILTERS } from './data/filters'
 
-const state = reactive<{
-  products: ProductInterface[];
-  cart: ProductCartInterface[];
-  filters: FiltersInterface;
-}>({
-  products: data,
-  cart: [],
-  filters: { ...DEFAULT_FILTERS },
-});
+// Utilisation de ref au lieu de reactive
+const products = ref<ProductInterface[]>(data)
+const cart = ref<ProductCartInterface[]>([])
+const filters = ref<FiltersInterface>({ ...DEFAULT_FILTERS })
 
 function addProductToCart(productId: number): void {
-  const product = state.products.find((product) => product.id === productId);
+  const product = products.value.find((product) => product.id === productId)
   if (product) {
-    const productInCart = state.cart.find(
-      (product) => product.id === productId
-    );
+    const productInCart = cart.value.find((product) => product.id === productId)
     if (productInCart) {
-      productInCart.quantity++;
+      productInCart.quantity++
     } else {
-      state.cart.push({ ...product, quantity: 1 });
+      cart.value.push({ ...product, quantity: 1 })
     }
   }
 }
 
 function removeProductFromCart(productId: number): void {
-  const productFromCart = state.cart.find(
-    (product) => product.id === productId
-  );
+  const productFromCart = cart.value.find((product) => product.id === productId)!
   if (productFromCart?.quantity === 1) {
-    state.cart = state.cart.filter((product) => product.id !== productId);
+    cart.value = cart.value.filter((product) => product.id !== productId)
   } else {
-    productFromCart.quantity--;
+    productFromCart.quantity--
   }
 }
 
 function updateFilter(filterUpdate: FilterUpdate) {
   if (filterUpdate.search !== undefined) {
-    state.filters.search = filterUpdate.search;
+    filters.value.search = filterUpdate.search
   } else if (filterUpdate.priceRange) {
-    state.filters.priceRange = filterUpdate.priceRange;
+    filters.value.priceRange = filterUpdate.priceRange
   } else if (filterUpdate.category) {
-    state.filters.category = filterUpdate.category;
+    filters.value.category = filterUpdate.category
   } else {
-    state.filters = { ...DEFAULT_FILTERS };
+    filters.value = { ...DEFAULT_FILTERS }
   }
 }
 
-const cartEmpty = computed(() => state.cart.length === 0);
+const cartEmpty = computed(() => cart.value.length === 0)
 
 const filteredProducts = computed(() => {
-  return state.products.filter((product) => {
+  return products.value.filter((product) => {
     if (
-      product.title
-        .toLocaleLowerCase()
-        .startsWith(state.filters.search.toLocaleLowerCase()) &&
-      product.price >= state.filters.priceRange[0] &&
-      product.price <= state.filters.priceRange[1] &&
-      (product.category === state.filters.category ||
-        state.filters.category === 'all')
+      product.title.toLocaleLowerCase().startsWith(filters.value.search.toLocaleLowerCase()) &&
+      product.price >= filters.value.priceRange[0] &&
+      product.price <= filters.value.priceRange[1] &&
+      (product.category === filters.value.category || filters.value.category === 'all')
     ) {
-      return true;
+      return true
     } else {
-      return false;
+      return false
     }
-  });
-});
+  })
+})
 </script>
 
 <template>
@@ -88,27 +76,27 @@ const filteredProducts = computed(() => {
       gridEmpty: cartEmpty,
     }"
   >
-    <TheHeader class="header" />
-    <Shop
+    <AppHeader class="header" />
+    <AppShop
       @update-filter="updateFilter"
       :products="filteredProducts"
-      :filters="state.filters"
+      :filters="filters"
       @add-product-to-cart="addProductToCart"
       class="shop"
     />
-    <Cart
+    <AppCart
       v-if="!cartEmpty"
-      :cart="state.cart"
+      :cart="cart"
       class="cart"
       @remove-product-from-cart="removeProductFromCart"
     />
-    <TheFooter class="footer" />
+    <AppFooter class="footer" />
   </div>
 </template>
 
 <style lang="scss">
-@import './assets/scss/base.scss';
-@import './assets/scss/debug.scss';
+@use './assets/scss/base.scss';
+@use './assets/scss/debug.scss';
 
 .app-container {
   min-height: 100vh;

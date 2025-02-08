@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import type {
-  FiltersInterface,
-  FilterUpdate,
-  Category,
-} from '../../interfaces';
+import type { FiltersInterface, FilterUpdate, Category } from '../../interfaces'
 defineProps<{
-  filters: FiltersInterface;
-  nbrOfProducts: number;
-}>();
+  filters: FiltersInterface
+  nbrOfProducts: number
+}>()
 const emit = defineEmits<{
-  (e: 'updateFilter', filterUpdate: FilterUpdate): void;
-}>();
+  (e: 'updateFilter', filterUpdate: FilterUpdate): void
+}>()
 </script>
 
 <template>
@@ -28,7 +24,14 @@ const emit = defineEmits<{
       <h3 class="mb-10">Trier par prix</h3>
       <div
         class="mb-5"
-        v-for="priceRange of ([[0, 10000], [800, 1000], [1000, 1500], [1500, 2000], [2000, 10000]] as [number, number][])"
+        v-for="priceRange of [
+          [0, 10000],
+          [800, 1000],
+          [1000, 1500],
+          [1500, 2000],
+          [2000, 10000],
+        ] as [number, number][]"
+        :key="priceRange[0].toString()"
       >
         <input
           :checked="filters.priceRange[0] === priceRange[0]"
@@ -42,8 +45,8 @@ const emit = defineEmits<{
             priceRange[0] === 0
               ? 'Tous les prix'
               : priceRange[0] === 2000
-              ? 'Plus de 2000€'
-              : `Entre ${priceRange[0]}€ et ${priceRange[1]}€`
+                ? 'Plus de 2000€'
+                : `Entre ${priceRange[0]}€ et ${priceRange[1]}€`
           }}
         </label>
       </div>
@@ -53,7 +56,8 @@ const emit = defineEmits<{
       <p
         class="category"
         :class="{ selected: filters.category === category }"
-        v-for="category in (['all', 'desktop', 'gamer', 'streaming'] as Category[])"
+        v-for="category in ['all', 'desktop', 'gamer', 'streaming'] as Category[]"
+        :key="category"
         @click="emit('updateFilter', { category })"
       >
         {{ category }}
@@ -63,9 +67,7 @@ const emit = defineEmits<{
       Nombre de résultats:
       <strong>{{ nbrOfProducts }}</strong>
     </small>
-    <button class="btn btn-danger" @click="emit('updateFilter', {})">
-      Supprimer les filtres
-    </button>
+    <button class="btn btn-danger" @click="emit('updateFilter', {})">Supprimer les filtres</button>
   </div>
 </template>
 
